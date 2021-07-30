@@ -1,21 +1,21 @@
 
-# Todo App API - CSoC Dev Task 3
+# Todo App API - CSoC Dev Task 5
 
 ## Introduction
 
-Welcome to the Week 3 of CSOC Dev. In this assignment, you will be working on the Django REST Framework. You will be implementing the same API server which we created for you in the Task 1. Also, you will be adding some additional functionality to the API.
+Welcome to the Task 5 of CSOC Dev. In this assignment, you will be working on the Django REST Framework. You will be implementing the TODO API server . Also, you will be adding some additional functionality to the API.
 
 
 ### Setting up the project
 
-- Make sure `python3.7` and `pip` are installed. Install `pipenv` by running `pip install pipenv`.
+- Make sure `python3.8` and `pip` are installed. Install `pipenv` by running `pip install pipenv`.
 - Install python dependencies using the command `pipenv install` Please use only pipenv for managing dependencies (Follow this [link](https://realpython.com/pipenv-guide/) if you are new to pipenv).
 - To activate this project's virtualenv, run `pipenv shell`.
 - Run `python manage.py migrate` to apply migrations.
 - Start the development server using `python manage.py runserver`
 
 ### Working
-The working of the API server was explained in the Task 1 itself. However, we are including the description of the API at the end of this readme for your reference. The API which we had created for Task 1 is deployed at https://todo-app-csoc.herokuapp.com/.
+We are including the description of the API at the end of this readme for your reference.
 
 You'll have to complete two subtasks:
 
@@ -36,7 +36,7 @@ Make sure to do proper validation of the requests, and grant proper permissions 
 - ### Collaborator feature (100 points)
 
 ## Deadline
-You'll have a week to complete this task. Hence, the deadline of this task is 15th May, 2020.
+You'll have a week to complete this task.
 
 ## Submission
 * Follow the instructions to setup and run this project.
@@ -136,7 +136,7 @@ In order to obtain a valid token it's necessary to send a request  `POST /auth/l
 	```
 	Response Code: `200`
 
--   `POST /todo/create/` **(The Response Body of this endpoint is different from what we have created for Task 1)**
+-   `POST /todo/create/` 
 
 	Create a Todo entry for the logged in user. Requires token in the Authorization header.
   
