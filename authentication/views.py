@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from .serializers import ( LoginSerializer, RegisterSerializer, UserSerializer, TokenSerializer)
-from django.contrib.auth  import authenticate,
+from django.contrib.auth  import authenticate
 
 
 def create_auth_token(user):
