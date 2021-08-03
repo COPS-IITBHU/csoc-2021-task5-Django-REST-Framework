@@ -66,8 +66,8 @@ class CollaboratorRemoveView(generics.GenericAPIView):
                 user=User.objects.get(username=serializer.initial_data['CollabUser'])
                 if serializer.initial_data['CollabUser'] == request.user.username:
                     return Response({'Error':'collaborator must not be user'},status=status.HTTP_400_BAD_REQUEST)
-                elif serializer.initial_data['CollabUser'] == request.user.username:
-                    return Response({'Error':'collaborator must not be user'},status=status.HTTP_400_BAD_REQUEST)
+                elif serializer.initial_data['CollabUser'] not in [i.username for i in todo.collaborator.all()]:
+                    return Response({'Error':'collaborator not present'},status=status.HTTP_400_BAD_REQUEST)
                 elif user is None:
                     return Response({'Error':'this user is not present'},status=status.HTTP_400_BAD_REQUEST) 
                 else:
