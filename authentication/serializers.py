@@ -3,18 +3,15 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+
 def create_auth_token(user):
-    """
-    Returns the token required for authentication for a user.
-    """
-    token, _ = Token.objects.get_or_create(user=user)
+    token, created = Token.objects.get_or_create(user=user)
     return token
     
 class TokenSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=500)
 
 class LoginSerializer(serializers.Serializer):
-    # TODO: Implement login functionality
     username = serializers.CharField()
     password = serializers.CharField()
 
@@ -35,7 +32,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.Serializer):
-    # TODO: Implement register functionality
+
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
     email=serializers.EmailField(required=True)
     first_name=serializers.CharField(required=True)
@@ -60,7 +57,8 @@ class RegisterSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # TODO: Implement the functionality to display user details
+
+    name = serializers.CharField(source='first_name')
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'name', 'email', 'password')

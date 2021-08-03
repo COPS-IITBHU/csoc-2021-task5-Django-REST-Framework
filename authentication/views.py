@@ -13,11 +13,6 @@ from .serializers import (
 
 
 class LoginView(generics.GenericAPIView):
-    """
-    TODO:
-    Implement login functionality, taking username and password
-    as input, and returning the Token.
-    """
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -29,14 +24,9 @@ class LoginView(generics.GenericAPIView):
 
 
 class RegisterView(generics.GenericAPIView):
-    """
-    TODO:
-    Implement register functionality, registering the user by
-    taking his details, and returning the Token.
-    """
     serializer_class = RegisterSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         response = serializer.register()
@@ -44,11 +34,6 @@ class RegisterView(generics.GenericAPIView):
 
 
 class UserProfileView(generics.RetrieveAPIView):
-    """
-    TODO:
-    Implement the functionality to retrieve the details
-    of the logged in user.
-    """
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
 
