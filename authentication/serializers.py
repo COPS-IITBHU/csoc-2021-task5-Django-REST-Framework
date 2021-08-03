@@ -26,30 +26,36 @@ class LoginSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.Serializer):
     # TODO: Implement register functionality
-    firstname = serializers.CharField()
-    lastname  = serializers.CharField()
-    email     = serializers.EmailField(required = True,validators = [UniqueValidator(queryset = User.objects.all())])
+    # firstname = serializers.CharField()
+    # lastname  = serializers.CharField()
     username  = serializers.CharField(required = True,validators = [UniqueValidator(queryset = User.objects.all())])
     password  = serializers.CharField(style = {'input_type': 'password'}, min_length = 8,write_only = True,required = True)
-    def save(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+    name = serializers.CharField(source='first_name', max_length=150)
+    email = serializers.EmailField(max_length=255, required = True, allow_blank=False)
+    def create(self, validated_data):
+        user = User(
+            first_name = validated_data['first_name'],
+            username = validated_data['username'],
+            email = validated_data['email'],
+            password = validated_data['password'],
+        )
+        user.set_password((validated_data['password']))
+        user.save()
         return user
-        
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'name', 'username')
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'id':  {'required': False, 'read_only': True}
-        }
+        fields = ['name', 'email', 'username', 'password']
+        extra_kwargs = {'password':{'write_only':True}}
+    
 
     
 
 
 class UserSerializer(serializers.ModelSerializer):
     # TODO: Implement the functionality to display user details
+    name = serializers.CharField(source='first_name', max_length=150, required=False)
     class Meta:
         model = User
-        fields = ('id','username', 'email' , 'username')
+        fields = ('id','username', 'email','name' )
     
     
