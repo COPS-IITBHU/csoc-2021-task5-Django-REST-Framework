@@ -19,8 +19,11 @@ class TodoListView(generics.ListCreateAPIView):
         print(response.data)
         return Response(response.data, status=status.HTTP_200_OK)
 
+
 class TodoView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+
+    @api_view(['GET', 'PUT', 'DELETE'])
 
     def get_object(self, pk):
         try:
