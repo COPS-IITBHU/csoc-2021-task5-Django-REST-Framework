@@ -33,41 +33,47 @@ class CollaboratorAddView(generics.GenericAPIView):
             todo = Todo.objects.get(id=id)
         except Todo.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user=User.objects.get(username=serializer.initial_data['CollabUser'])
-            if serializer.initial_data['CollabUser'] == request.user.username:
-                return Response({'Error':'collaborator must not be user'},status=status.HTTP_400_BAD_REQUEST)
-            elif user is None:
-                return Response({'Error':'this user is not present'},status=status.HTTP_400_BAD_REQUEST) 
+        if request.user==todo.creator:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                user=User.objects.get(username=serializer.initial_data['CollabUser'])
+                if serializer.initial_data['CollabUser'] == request.user.username:
+                    return Response({'Error':'collaborator must not be user'},status=status.HTTP_400_BAD_REQUEST)
+                elif user is None:
+                    return Response({'Error':'this user is not present'},status=status.HTTP_400_BAD_REQUEST) 
+                else:
+                    todo[0].collaborator.add(user[0])
+                    todo[0].save()
+                    return Response({'Success':'Added collaborator successfully'}, status=status.HTTP_200_OK)
             else:
-                todo[0].collaborator.add(user[0])
-                todo[0].save()
-                return Response({'Success':'Added collaborator successfully'}, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'Error':'you are not creator of this todo'},status=status.HTTP_400_BAD_REQUEST)
 
 class CollaboratorRemoveView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = CollaboratorSerializer
-    def delete(self, request,id):
+    def post(self, request,id):
         try:
             todo = Todo.objects.get(id=id)
         except Todo.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user=User.objects.get(username=serializer.initial_data['CollabUser'])
-            if serializer.initial_data['CollabUser'] == request.user.username:
-                return Response({'Error':'collaborator must not be user'},status=status.HTTP_400_BAD_REQUEST)
-            elif user is None:
-                return Response({'Error':'this user is not present'},status=status.HTTP_400_BAD_REQUEST) 
+        if request.user==todo.creator:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                user=User.objects.get(username=serializer.initial_data['CollabUser'])
+                if serializer.initial_data['CollabUser'] == request.user.username:
+                    return Response({'Error':'collaborator must not be user'},status=status.HTTP_400_BAD_REQUEST)
+                elif user is None:
+                    return Response({'Error':'this user is not present'},status=status.HTTP_400_BAD_REQUEST) 
+                else:
+                    todo[0].collaborator.remove(user[0])
+                    todo[0].save()
+                    return Response({'Success':'Added collaborator successfully'}, status=status.HTTP_200_OK)
             else:
-                todo[0].collaborator.remove(user[0])
-                todo[0].save()
-                return Response({'Success':'Removed collaborator successfully'}, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'Error':'you are not creator of this todo'},status=status.HTTP_400_BAD_REQUEST)
 
 
 
