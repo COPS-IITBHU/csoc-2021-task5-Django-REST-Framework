@@ -204,6 +204,7 @@ class TodoView(generics.GenericAPIView):
             todo = Todo.objects.get(id=id)
         except:
             return Response({ "todo": "Not able to found" }, status=404)
+            
         if request.user == todo.creator or str(request.user) in todo.collaborators:
             todo.delete()
             return Response({ "todo": "removed successfully" }, status=200)
