@@ -15,7 +15,7 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
         return todo
-    
+        
     class Meta:
         model = Todo
         fields = ('id', 'title',)
