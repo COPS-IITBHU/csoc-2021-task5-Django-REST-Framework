@@ -19,5 +19,10 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         model = Todo
         fields = ('id', 'title')
 
-class CollaboratorSerializer(serializers.Serializer):
+class CollaboratorSerializer(serializers.ModelSerializer):
     CollabUser = serializers.CharField(required=True, max_length=100)
+    
+    class Meta:
+        model = Todo
+        fields = ('CollabUser', 'id')
+    
