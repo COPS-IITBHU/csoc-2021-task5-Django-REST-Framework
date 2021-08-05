@@ -8,3 +8,10 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.title
+
+class Collaborator(models.Model):
+    collab_name = models.CharField(max_length=255)
+    todo_id = models.SmallIntegerField()
+
+    def __str__(self):
+        return self.collab_name
