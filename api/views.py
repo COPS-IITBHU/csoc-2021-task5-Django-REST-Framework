@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import TodoCreateSerializer, TodoListSerializer, CollaboratorsSerializer
+from .serializers import TodoCreateSerializer, TodoListSerializer, CollaboratorsSerializer, TodoEditSerializer
 from .models import Todo
 
 """
@@ -53,7 +53,8 @@ class TodoListView(generics.ListAPIView):
         for i in q:
             v.append(i)
         for i in p:
-            v.append(i)
+            if i not in v:
+                v.append(i)
         return v
 
 
@@ -70,7 +71,7 @@ class Allowed(BasePermission):
 class TodoView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, Allowed, ]
     queryset = Todo.objects.all()
-    serializer_class = TodoListSerializer
+    serializer_class = TodoEditSerializer
 
     def get_object(self):
         q = Todo.objects.all()
@@ -129,7 +130,6 @@ class RemoveCollaboratorView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         todo_id = self.kwargs.get('pk')
-        print(request.data, self.request.user, self.kwargs.get('pk'))
         user = User.objects.filter(username=request.data['collaborator'])
         if len(user) == 0:
             return Response({'Response': 'Invalid Username.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -140,17 +140,13 @@ class RemoveCollaboratorView(generics.GenericAPIView):
 
         if todo[0].creator != self.request.user:
             return Response({'Response': 'Only Creator can remove collaborator.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        print(todo[0].collaborators.all())
         v = []
         for i in todo[0].collaborators.all():
             v.append(i.id)
-        print(v)
         if user[0].id not in v:
             return Response({'Response': 'User not present in collaborator list'}, status=status.HTTP_400_BAD_REQUEST)
 
         v.remove(user[0].id)
         todo[0].collaborators.set(v)
-        print(v)
         todo[0].save()
-        return Response(status=status.HTTP_200_OK)
+        return Response({'Response': 'Success'},status=status.HTTP_200_OK)

@@ -36,6 +36,11 @@ class TodoListSerializer(serializers.ModelSerializer):
         model = Todo
         fields = ['id', 'title', 'creator']
 
+class TodoEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ['id', 'title']
+
 class CollaboratorsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
