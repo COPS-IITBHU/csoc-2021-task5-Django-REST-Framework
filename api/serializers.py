@@ -1,5 +1,6 @@
+from django.db.models import fields
 from rest_framework import serializers
-from .models import Todo
+from .models import Collaborator, Todo
 
 
 """
@@ -27,3 +28,9 @@ class TodoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+class CollaboratorCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Collaborator
+        fields = ('id', 'collab_name','todo_id')
