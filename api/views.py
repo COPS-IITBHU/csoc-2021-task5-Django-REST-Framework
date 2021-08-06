@@ -4,7 +4,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework import mixins
 from rest_framework.response import Response
-from .serializers import TodoCreateSerializer
+from .serializers import *
 from .models import Todo
 from django.contrib.auth.models import User
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -20,7 +20,7 @@ Todo GET (List and Detail), PUT, PATCH and DELETE.
 class TodoGetView(generics.GenericAPIView, mixins.ListModelMixin):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = (permissions.IsAuthenticated, )
-    serializer_class = TodoCreateSerializer
+    serializer_class = TodoSerializer
     queryset = Todo.objects.all()
     lookup_field = 'id'
 
@@ -31,7 +31,7 @@ class TodoGetView(generics.GenericAPIView, mixins.ListModelMixin):
 class TodoGetSpecificView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = (permissions.IsAuthenticated, )
-    serializer_class = TodoCreateSerializer
+    serializer_class = TodoSerializer
     queryset = Todo.objects.all()
     lookup_field = 'id'
 
