@@ -118,6 +118,3 @@ class TodoRemoveCollaborators(generics.GenericAPIView):
 
         success_message = serializer.save(id,users,'DELETE')
         return Response(data=success_message, status=status.HTTP_200_OK)
-    
-
-        

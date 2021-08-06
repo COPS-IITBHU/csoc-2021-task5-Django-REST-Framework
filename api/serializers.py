@@ -138,7 +138,7 @@ class TodoCollabSerializer(serializers.Serializer):
         non_existant = []
 
         for username in users:
-            if not(User.objects.filter(username=username).exists()):
+            if not User.objects.filter(username=username).exists():
                 non_existant.append(username)
                 continue
 
