@@ -56,7 +56,48 @@ class TodoListSerializer(serializers.ModelSerializer):
         fields = ("id", "title",)
 
 
-class TodoEditSerializer(serializers.ModelSerializer):        
+class TodoEditSerializer(serializers.ModelSerializer):    
+    def pre_check(self, user, id):
+        if not Todo.objects.filter(id=id).exists():
+            return {
+                "detail": f'Todo with id {id} does not exist!',
+                "can_access": False
+            }
+        
+        todo = Todo.objects.get(id=id)
+        if todo.creator == user:
+            return {
+                "can_access": True
+            }
+            
+        if Todo.objects.filter(Q(id=id) & Q(collaborators__username = user.username)).exists():
+            return {
+                "can_access": True
+            }
+        
+        return {
+            "detail": "User not authorised to access the todo!",
+            "can_access": False
+        }
+        
+
+    def fetch(self, id):
+        todo = Todo.objects.get(id=id)
+
+        collabs = []
+        for collab in todo.collaborators.all():
+            collabs.append(collab.username)
+        
+        serialized_todo = {
+            "id" : todo.id,
+            "creator" : todo.creator.username,
+            "title" : todo.title,
+            "collaborators" : collabs
+        }
+
+        return serialized_todo
+
+
     def save(self, id):
         title = self.validated_data.get("title")
         todo = Todo.objects.get(id=id)
@@ -73,6 +114,24 @@ class TodoEditSerializer(serializers.ModelSerializer):
 
 
 class TodoCollabSerializer(serializers.Serializer):
+    def pre_check(self, user, id):
+        if not Todo.objects.filter(id=id).exists():
+            return {
+                "detail": f'Todo with id {id} does not exist',
+                "can_access": False,
+            }
+        
+        todo = Todo.objects.get(id=id)
+        if todo.creator == user:
+            return {
+                "can_access": True,
+            }
+        
+        return {
+            "detail": "User not authorized to modify collaborators!",
+            "can_access": False,
+        }
+
     def save(self,id,users,method):
 
         todo = Todo.objects.get(id=id)

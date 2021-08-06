@@ -11,17 +11,6 @@ from .models import Todo
 from django.contrib.auth.models import User
 
 
-def todo_editable(user, id):
-    editable = False
-    todo = Todo.objects.get(id=id)
-    if todo.creator == user:
-        editable = True
-    if Todo.objects.filter(Q(id=id) & Q(collaborators__username = user.username)).exists():
-        editable = True
-
-    return editable
-
-
 class TodoCreateView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoCreateSerializer
@@ -51,38 +40,44 @@ class TodoEditView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class  = TodoEditSerializer
 
-    # TODO : Handle the case when todo does not exist
+    def get(self, request, *args, **kwargs):
+        serializer = TodoEditSerializer(data=request.data)
+
+        pre_check_res = serializer.pre_check(request.user, kwargs.get('pk'))
+        if pre_check_res.get('can_access') == False:
+            return Response(data=pre_check_res, status=status.HTTP_400_BAD_REQUEST)
+        
+        fetched_todo = serializer.fetch(kwargs.get('pk'))
+        return Response(data=fetched_todo, status=status.HTTP_200_OK)
 
     def put(self, request, *args, **kwargs):
-        editable = todo_editable(request.user, kwargs.get('pk'))
-        if not(editable):
-            return Response(data={
-                "error" : "User not authorised to edit the todo"
-            },status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = TodoEditSerializer(data=request.data)
+
+        pre_check_res = serializer.pre_check(request.user, kwargs.get('pk'))
+        if pre_check_res.get('can_access') == False:
+            return Response(data=pre_check_res, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer.is_valid(raise_exception=True)
         updated = serializer.save(kwargs.get('pk'))
         return Response(data=updated, status=status.HTTP_200_OK)
 
     def patch(self, request, *args, **kwargs):
-        editable = todo_editable(request.user, kwargs.get('pk'))
-        if not(editable):
-            return Response(data={
-                "error" : "User not authorised to edit the todo"
-            },status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = TodoEditSerializer(data=request.data)
+
+        pre_check_res = serializer.pre_check(request.user, kwargs.get('pk'))
+        if pre_check_res.get('can_access') == False:
+            return Response(data=pre_check_res, status=status.HTTP_400_BAD_REQUEST)
+
         serializer.is_valid(raise_exception=True)
         updated = serializer.save(kwargs.get('pk'))
         return Response(data=updated, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
-        editable = todo_editable(request.user, kwargs.get('pk'))
-        if not(editable):
-            return Response(data={
-                "error" : "User not authorised to remove the todo"
-            },status=status.HTTP_401_UNAUTHORIZED)
+        serializer = TodoEditSerializer(data=request.data)
+
+        pre_check_res = serializer.pre_check(request.user, kwargs.get('pk'))
+        if pre_check_res.get('can_access') == False:
+            return Response(data=pre_check_res, status=status.HTTP_400_BAD_REQUEST)
 
         todo = Todo.objects.get(id=kwargs.get('pk'))
         todo.delete()
@@ -90,7 +85,6 @@ class TodoEditView(generics.GenericAPIView):
 
 
 class TodoAddCollaborators(generics.GenericAPIView):
-    # TODO : allow only when todo belongs to the user
     queryset = Todo.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TodoCollabSerializer
@@ -99,13 +93,16 @@ class TodoAddCollaborators(generics.GenericAPIView):
         users = request.data.get('users')
         id = kwargs.get('pk')
         serializer = TodoCollabSerializer(request.data)
+
+        pre_check_res = serializer.pre_check(request.user, kwargs.get('pk'))
+        if pre_check_res.get('can_access') == False:
+            return Response(data=pre_check_res, status=status.HTTP_400_BAD_REQUEST)
 
         success_message = serializer.save(id,users,'ADD')
         return Response(data=success_message, status=status.HTTP_200_OK)
 
 
 class TodoRemoveCollaborators(generics.GenericAPIView):
-    # TODO : allow only when todo belongs to the user
     queryset = Todo.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TodoCollabSerializer
@@ -114,6 +111,10 @@ class TodoRemoveCollaborators(generics.GenericAPIView):
         users = request.data.get('users')
         id = kwargs.get('pk')
         serializer = TodoCollabSerializer(request.data)
+
+        pre_check_res = serializer.pre_check(request.user, kwargs.get('pk'))
+        if pre_check_res.get('can_access') == False:
+            return Response(data=pre_check_res, status=status.HTTP_400_BAD_REQUEST)
 
         success_message = serializer.save(id,users,'DELETE')
         return Response(data=success_message, status=status.HTTP_200_OK)
