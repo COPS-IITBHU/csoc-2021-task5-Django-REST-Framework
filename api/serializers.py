@@ -27,14 +27,3 @@ class TodoSerializer(serializers.ModelSerializer):
         model = Todo
         fields = ('id', 'title',)
 
-# class CollabSerializer(serializers.ModelSerializer):
-#     username = serializers.CharField(source='user.username')
-#     def validate_username(self, value):
-#         if value != self.context['request'].user.username:
-#             raise serializers.ValidationError("You can't create a collab with someone else's todo")
-#         return {'id', 'username', 'todo'}
-    
-#     class Meta:
-#         model = collab
-#         fields = ('id','username','todo',)
-#         print(id)
