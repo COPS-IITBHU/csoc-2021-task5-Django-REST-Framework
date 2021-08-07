@@ -1,4 +1,4 @@
-from django.http.request import QueryDict
+from django.db.models import Q
 from rest_framework import (generics, permissions, status)
 from django.http import Http404
 from rest_framework.response import Response
@@ -38,9 +38,10 @@ class TodoCreateView(generics.GenericAPIView):
 class TodoListView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoSerializer
-
+    
+    # PRINTING ALL TODO IN WHICH AUTHENTICATED USER IS CREATOR OR CONTRIBUTOR
     def get(self,request):
-        todos = Todo.objects.filter(creator=request.user)
+        todos = Todo.objects.filter(Q(creator=request.user) | Q(collabs=request.user))
         serializer = self.get_serializer(todos,many=True)
         return Response(serializer.data)
 
