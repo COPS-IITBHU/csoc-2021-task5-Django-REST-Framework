@@ -81,7 +81,12 @@ class TodoAddColaboratorsView(generics.GenericAPIView):
     lookup_field = 'id'
 
     def post(self, request, id=None):
-        todo = Todo.objects.get(id__exact=id)
+        try:
+            todo = Todo.objects.get(id__exact=id)
+        except:
+            return Response({
+                "Todo with the following id does not exists"
+            })
         if todo.creator==request.user:
             try:
                 collaborator = User.objects.get(
@@ -108,3 +113,34 @@ class TodoAddColaboratorsView(generics.GenericAPIView):
         })
 
 
+class TodoRemoveColaboratorsView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = CollaboratorSerializer
+    lookup_field = 'id'
+
+    def put(self, request, id=None):
+        try:
+            todo = Todo.objects.get(id__exact=id)
+        except:
+            return Response({
+                "Todo with the following id does not exists"
+            })
+        if todo.creator == request.user:
+            try:
+                collaborator = User.objects.get(
+                    username__exact=request.data.get('username'))
+                todo.contributors.remove(collaborator)
+                todo.save()
+            except:
+                return Response({
+                    "User with this username does not exists"
+                })
+        else:
+            return Response({
+                "You dont have permissions to remove collaborators from this todo"
+            })
+
+        
+        return Response({
+            "Collaborator removed succesfully"
+        })
