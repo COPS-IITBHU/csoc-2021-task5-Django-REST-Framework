@@ -80,7 +80,7 @@ class UserProfileView(generics.RetrieveAPIView, mixins.ListModelMixin):
     Implement the functionality to retrieve the details
     of the logged in user.
     """
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = UserSerializer
     # queryset = User.objects.all()
