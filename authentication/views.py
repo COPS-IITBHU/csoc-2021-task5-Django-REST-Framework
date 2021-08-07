@@ -1,5 +1,6 @@
 from rest_framework import permissions, serializers
 from rest_framework import generics
+from rest_framework.generics import *
 from rest_framework import status
 from rest_framework import response
 from rest_framework.response import Response
