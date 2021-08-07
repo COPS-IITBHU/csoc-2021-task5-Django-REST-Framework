@@ -91,8 +91,13 @@ class TodoAddColaboratorsView(generics.GenericAPIView):
             try:
                 collaborator = User.objects.get(
                     username__exact=request.data.get('username'))
-                todo.contributors.add(collaborator)
-                todo.save()
+                if collaborator == request.user:
+                    return Response({
+                        "You cannot add yourself as a collaborator since you are the creator of this todo"
+                    })
+                else:
+                    todo.contributors.add(collaborator)
+                    todo.save()
             except:
                 return Response({
                     "User with this username does not exists"
@@ -129,8 +134,14 @@ class TodoRemoveColaboratorsView(generics.GenericAPIView):
             try:
                 collaborator = User.objects.get(
                     username__exact=request.data.get('username'))
-                todo.contributors.remove(collaborator)
-                todo.save()
+                if collaborator == request.user:
+                    return Response({
+                        "You cannot remove yourself from collaborators since you are the creator of this todo"
+                    })
+                else:
+                    todo.contributors.remove(collaborator)
+                    todo.save()
+                
             except:
                 return Response({
                     "User with this username does not exists"
