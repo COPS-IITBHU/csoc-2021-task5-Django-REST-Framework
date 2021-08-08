@@ -37,15 +37,15 @@ class LoginView(generics.GenericAPIView):
             token = create_auth_token(user)
             return Response({
                 'token': token.key
-            })
+            }, status=status.HTTP_200_OK)
 
             # A backend authenticated the credentials
         else:
             return Response({
-                "non_field_errors": [
+                'non_field_errors': 
                     "Invalid credentials or the user does not exist!"
-                ]
-            })
+                
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(generics.GenericAPIView):
     """
@@ -59,9 +59,9 @@ class RegisterView(generics.GenericAPIView):
         serializer = RegisterSerializer(data=request.data)
         if User.objects.filter(email=request.data.get('email')).exists():
             return Response({
-                "email": [
+                'email': 
                     "Email already exists!"
-                ]
+                
             })
         if serializer.is_valid():
             serializer.save()
