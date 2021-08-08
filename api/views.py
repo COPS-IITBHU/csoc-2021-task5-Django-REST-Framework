@@ -26,7 +26,7 @@ class TodoGetView(generics.GenericAPIView):
     # lookup_field = 'id'
 
     def get(self, request):
-        queryset = Todo.objects.filter(Q(creator=request.user) |  Q(
+        queryset = Todo.objects.filter(Q(creator=request.user) | Q(
             contributors=request.user))
         # queryset = Todo.objects.filter(creator__exact=request.user)
         serializer = TodoSerializer(queryset, many=True)
@@ -47,15 +47,14 @@ class TodoGetSpecificView(generics.GenericAPIView, mixins.RetrieveModelMixin, mi
             return Response({"Todo with the following id does not exist"})
         queryset = Todo.objects.filter(Q(creator=request.user) | Q(
             contributors=request.user))
-        x=False
+        x = False
         for todos in queryset:
-            if todos==todo:
-                x=True
+            if todos == todo:
+                x = True
         if x:
             return self.update(request, id)
         else:
             return Response({"You dont have permission to edit this todo"})
-        
 
     def patch(self, request, id=None):
         try:
@@ -72,7 +71,6 @@ class TodoGetSpecificView(generics.GenericAPIView, mixins.RetrieveModelMixin, mi
             return self.update(request, id)
         else:
             return Response({"You dont have permission to edit this todo"})
-        
 
     def get(self, request, id=None):
         try:
@@ -89,26 +87,25 @@ class TodoGetSpecificView(generics.GenericAPIView, mixins.RetrieveModelMixin, mi
             return self.retrieve(request)
         else:
             return Response({"You dont have permission to view this todo"})
-        
 
     def delete(self, request, id):
         try:
-            todo = Todo.objects.get(id__exact= id)
+            todo = Todo.objects.get(id__exact=id)
         except:
             return Response({"Todo with the following id does not exist"})
         queryset = Todo.objects.filter(Q(creator=request.user) | Q(
             contributors=request.user))
-        x=False
+        x = False
         for todos in queryset:
-            if todos==todo:
-                x=True
+            if todos == todo:
+                x = True
         if x:
             return self.destroy(request, id)
         else:
             return Response({"You dont have permission to delete this todo"})
 
 
-class TodoCreateView(generics.GenericAPIView, mixins.CreateModelMixin):
+class TodoCreateView(generics.GenericAPIView):
     """
     TODO:
     Currently, the /todo/create/ endpoint returns only 200 status code,
@@ -122,14 +119,17 @@ class TodoCreateView(generics.GenericAPIView, mixins.CreateModelMixin):
     serializer_class = TodoCreateSerializer
 
     def post(self, request):
-        return self.create(request)
+        # return self.create(request)
         """
         Creates a Todo entry for the logged in user.
         """
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        # return Response(status=status.HTTP_200_OK)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id = serializer.save()
+        return Response({
+            "id": id,
+            "title": request.data.get('title')
+        })
 
 
 class TodoAddColaboratorsView(generics.GenericAPIView):
