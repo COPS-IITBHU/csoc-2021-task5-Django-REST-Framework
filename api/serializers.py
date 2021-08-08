@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import *
 
 
 """
@@ -23,7 +23,28 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+        content = {
+            "id" : todo.id,
+            "title" : title
+        }
+        return content
     
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+class TodoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Todo
+        fields = ('id', 'title')
+
+class CollaboratorSerializer(serializers.ModelSerializer):
+    
+    collaborator_username = serializers.CharField(required=True, max_length=255)
+
+    class Meta:
+        model = Todo
+        fields = ('id','collaborator_username')
+
+
