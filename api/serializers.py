@@ -33,11 +33,8 @@ class TodoCreateSerializer(serializers.ModelSerializer):
 
 
 class TodoSerializer(serializers.ModelSerializer):
-    
-
     class Meta:
         model = Todo
-        # fields = '__all__'
         fields = ('id', 'title',)
 
 class CollaboratorSerializer(serializers.ModelSerializer):

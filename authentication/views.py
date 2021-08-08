@@ -29,9 +29,12 @@ class LoginView(generics.GenericAPIView):
 
     def post(self, request):
         
-        # print(request)
         username = request.data.get('username')
         password = request.data.get('password')
+        if username=='' or password=='':
+            return Response({
+                'Username and password both should be provided'
+            }, status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(username=username, password=password)
         if user is not None:
             token = create_auth_token(user)
@@ -39,7 +42,6 @@ class LoginView(generics.GenericAPIView):
                 'token': token.key
             }, status=status.HTTP_200_OK)
 
-            # A backend authenticated the credentials
         else:
             return Response({
                 'non_field_errors': 
@@ -62,16 +64,16 @@ class RegisterView(generics.GenericAPIView):
                 'email': 
                     "Email already exists!"
                 
-            })
+            },status=status.HTTP_409_CONFLICT)
         if serializer.is_valid():
             serializer.save()
             user = User.objects.get(username__exact=request.data.get('username'))
             token = create_auth_token(user)
             return Response({
                 'token': token.key
-            })
+            }, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileView(generics.RetrieveAPIView, mixins.ListModelMixin):
@@ -81,13 +83,13 @@ class UserProfileView(generics.RetrieveAPIView, mixins.ListModelMixin):
     of the logged in user.
     """
     # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # uncomment the above line to check in postman
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = UserSerializer
-    # queryset = User.objects.all()
-
+    
     def get(self, request):
         id = request.user.id
         user = User.objects.get(id__exact=id)
         queryset = user
         serializer = UserSerializer(queryset)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
