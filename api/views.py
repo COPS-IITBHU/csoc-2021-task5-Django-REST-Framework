@@ -123,16 +123,14 @@ class TodoView(generics.GenericAPIView):
         """
         Delete the Todo with given id. Requires token in the Authorization header.
         """
-        try:
+        if Todo.objects.filter(id=id).count():
             todo = Todo.objects.get(id=id)
-        except Todo.DoesNotExist:
-            return Response({'error': 'Todo not found'}, status=status.HTTP_404_NOT_FOUND)
-        if self.checkIfAllowed(todo, request.user):
-            Collaborator.objects.filter(todo_id=todo.id, collab_username=request.user.username).delete()
-            todo.delete()
-            return Response({'message': 'Todo deleted'}, status=status.HTTP_204_NO_CONTENT)
-        else: 
+            if self.checkIfAllowed(todo, request.user):
+                Collaborator.objects.filter(todo_id=todo.id, collab_username=request.user.username).delete()
+                todo.delete()
+                return Response({'message': 'Todo deleted'}, status=status.HTTP_204_NO_CONTENT)
             return Response({'error': 'Only creator and collaborators allowed'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'error': 'Todo not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CollaboratorAddView(generics.GenericAPIView):
@@ -179,20 +177,18 @@ class CollaboratorRemoveView(generics.GenericAPIView):
         """
         Remove a collaborator by username and todo id. Requires token in the Authorization header.
         """
-        try:
-            todo = Todo.objects.get(id=id)
-        except Todo.DoesNotExist:
-            return Response({'error': 'Todo not found'}, status=status.HTTP_404_NOT_FOUND)
+        if Todo.objects.filter(id=id).count():
+            todo_creator = Todo.objects.get(id=id).creator
+            if request.user == todo_creator:
+                if request.user.username == request.data['collab_username']:
+                    return Response({'error': 'This is the creator, cannot be removed'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                try:
+                    collaborator = Collaborator.objects.get(todo_id=id, collab_username=request.data['collab_username'])
+                except Collaborator.DoesNotExist:
+                    return Response({'error': 'No such collaborator exists for this todo'}, status=status.HTTP_404_NOT_FOUND)
 
-        if todo.creator == request.user:
-            if request.user.username == request.data['collab_username']:
-                return Response({'error': 'This is the creator, cannot be removed'}, status=status.HTTP_400_BAD_REQUEST)
-            try:
-                collaborator = Collaborator.objects.get(todo_id=id, collab_username=request.data['collab_username'])
-            except Collaborator.DoesNotExist:
-                return Response({'error': 'No such collaborator exists for this todo'}, status=status.HTTP_404_NOT_FOUND)
-
-            collaborator.delete()
-            return Response({'message': 'Successfully Deleted'}, status=status.HTTP_204_NO_CONTENT)
-        else:
+                collaborator.delete()
+                return Response({'message': 'Successfully Deleted'}, status=status.HTTP_204_NO_CONTENT)
             return Response({'error': 'Only creator of todo is allowed to remove collaborators'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'error': 'Todo not found'}, status=status.HTTP_404_NOT_FOUND)
