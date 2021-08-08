@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Todo
-
+from django.contrib.auth.models import User
 
 """
 TODO:
@@ -23,7 +23,33 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
-    
+        response = {
+            "id":  todo.id,
+            "title":  todo.title,
+        }
+        return response
+
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+class TodoCommonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ('id', 'title',)
+
+class TodoListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ('id', 'title', 'collaborators',)
+        
+class UserCollabSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
+
+class TodoCollabSerializer(serializers.ModelSerializer):
+    collaborators = UserCollabSerializer(read_only=True, many=True)
+    class Meta:
+        model = Todo
+        fields = ('id', 'collaborators',)
