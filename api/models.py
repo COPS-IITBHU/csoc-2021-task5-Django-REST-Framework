@@ -8,3 +8,11 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Collaborator(models.Model):
+    collab_username = models.CharField(max_length=75)
+    todo_id = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.collab_username} - Todo ID {self.todo_id}'

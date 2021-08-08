@@ -1,5 +1,5 @@
-from rest_framework import serializers
-from .models import Todo
+from rest_framework import serializers, exceptions
+from .models import Todo, Collaborator
 
 
 """
@@ -23,7 +23,15 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+        return todo
     
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+
+class CollaboratorCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Collaborator
+        fields = ('id', 'collab_username', 'todo_id')
