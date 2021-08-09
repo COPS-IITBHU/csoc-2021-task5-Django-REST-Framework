@@ -1,22 +1,40 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import *
+from django.contrib.auth.models import User
+from authentication.serializers import *
+
 
 
 class TodoViewSerializer(serializers.ModelSerializer):
+    creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
     class Meta:
         model = Todo
-        fields = ('id', 'title')
+        fields = ('id', 'title', 'creator')
 
+class CollabViewSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', required=False, read_only=True)
+    def validate_username(self, value):
+        if value != self.context['request'].user.username:
+            raise serializers.ValidationError("You can't create a collab with someone else's todo")
 
-class TodoCreateSerializer(serializers.ModelSerializer):
-    def save(self, **kwargs):
-        data = self.validated_data
-        user = self.context['request'].user
-        title = data['title']
-        todo = Todo.objects.create(creator=user, title=title)
-        return todo
-        
+    class Meta:
+        model = collab
+        fields = ('id','username','todo')
+
+class TodoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Todo
         fields = ('id', 'title',)
 
+# class CollabSerializer(serializers.ModelSerializer):
+#     username = serializers.CharField(source='user.username')
+#     def validate_username(self, value):
+#         if value != self.context['request'].user.username:
+#             raise serializers.ValidationError("You can't create a collab with someone else's todo")
+#         return {'id', 'username', 'todo'}
+    
+#     class Meta:
+#         model = collab
+#         fields = ('id','username','todo',)
+#         print(id)

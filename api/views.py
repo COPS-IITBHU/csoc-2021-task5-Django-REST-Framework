@@ -1,80 +1,104 @@
-from rest_framework import generics
+from django.db.models import query
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, viewsets
+from rest_framework.generics import *
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.decorators import api_view
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Todo
+from .models import *
 from django.http import Http404
+from rest_framework.decorators import action   
+from django.contrib.auth import get_user_model
 
-class TodoListView(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = TodoCreateSerializer
+UserModel = get_user_model()  
 
-    def get(self, request):
-
-        queryset = Todo.objects.filter(creator=request.user)
-        response = self.get_serializer(queryset, many=True)
-        print(response.data)
-        return Response(response.data, status=status.HTTP_200_OK)
-
-
-class TodoView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @api_view(['GET', 'PUT', 'DELETE'])
-
-    def get_object(self, pk):
-        try:
-            todo = Todo.objects.get(pk=pk,creator=self.request.user)
-            return todo[0]
-
-        except:
-            raise Http404
+# class TodoListView(generics.ListAPIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#     serializer_class = TodoViewSerializer
     
-    def get(self, request, pk, format=None):
+#     def get_queryset(self):
+#         user = self.request.user
+#         uTodo = Todo.objects.filter(creator=user)
+#         cTodo = collab.objects.filter(user = user).values('todo')
+#         oTodo = Todo.objects.filter(pk__in = cTodo)
+#         return uTodo | oTodo
 
-        todo = self.get_object(pk)
-        serializer = TodoViewSerializer(todo)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class CollabListViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CollabViewSerializer
 
-    def put(self, request, pk, format= None):
-
-        todo = self.get_object(pk)
-        serializer = TodoViewSerializer(todo, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        return collab.objects.all()
     
-    def patch(self, request, pk, format=None):
+class TodoViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TodoSerializer
 
-        todo = self.get_object(pk)
-        serializer = TodoViewSerializer(todo, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Todo.objects.all()
+
+    # def get_object(self):
+    #     if getattr(self, 'swagger_fake_view', False):
+    #         return None
+    #     return super().get_object()
+    
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     uTodo = Todo.objects.filter(creator=user)
+    #     cTodo = collab.objects.filter(user = user).values('todo')
+    #     oTodo = Todo.objects.filter(pk__in = cTodo)
+    #     return uTodo | oTodo
+
+
+# class TodoCreateView(generics.CreateAPIView):
+#     permission_classes = (permissions.IsAuthenticated, )
+#     serializer_class = TodoCreateSerializer
+
+#     def post(self, request):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# class CollabAddView(generics.GenericAPIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#     serializer_class = CollabSerializer
+#     queryset = collab
+
+#     def post(self, request, pk):
+#         todo = get_object_or_404(Todo, pk=pk, creator=request.user)
+#         request.data['todo'] = todo.pk
+#         serializer = self.get_serializer(data=request.data)   
+#         if serializer.is_valid():
+#             user = get_object_or_404(User, username=serializer.data['username'])
+#             contri = collab.objects.get_or_create(todo=todo, user=user)
+
+#             return Response(status=status.HTTP_201_CREATED)
+
+#         else: 
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+# class CollabRemoveView(generics.DestroyAPIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#     serializer_class = CollabSerializer
+#     queryset = collab
+
+
+#     def delete(self, request, pk):
+#         todo = get_object_or_404(Todo, pk=pk, creator=request.user)
+#         request.data['todo'] = todo.pk
+#         serializer = self.get_serializer(data=request.data)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, pk , format=None):
+#         if serializer.is_valid():
+#             user = get_object_or_404(User, username = serializer.validated_data['username'])
+#             contri = get_object_or_404(collab, user=user, todo=todo)
+#             contri.delete()
+#             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        todo = self.get_object(pk)
-        todo.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-class TodoCreateView(generics.GenericAPIView):
-
-    permission_classes = (permissions.IsAuthenticated, )
-    serializer_class = TodoCreateSerializer
-
-    def post(self, request):
-
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#         else: 
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
