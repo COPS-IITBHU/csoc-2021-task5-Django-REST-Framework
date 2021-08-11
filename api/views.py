@@ -13,8 +13,6 @@ from django.http import Http404
 from rest_framework.decorators import action   
 from django.contrib.auth import get_user_model
 
-UserModel = get_user_model()  
-
 # class TodoListView(generics.ListAPIView):
 #     permission_classes = (permissions.IsAuthenticated,)
 #     serializer_class = TodoViewSerializer
@@ -25,7 +23,6 @@ UserModel = get_user_model()
 #         cTodo = collab.objects.filter(user = user).values('todo')
 #         oTodo = Todo.objects.filter(pk__in = cTodo)
 #         return uTodo | oTodo
-
 class CollabListViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = CollabViewSerializer
@@ -40,11 +37,6 @@ class TodoViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Todo.objects.all()
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # def get_object(self):
     #     if getattr(self, 'swagger_fake_view', False):
@@ -99,3 +91,4 @@ class TodoViewSet(viewsets.ModelViewSet):
 
 #         else: 
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

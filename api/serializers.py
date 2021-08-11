@@ -6,7 +6,6 @@ from authentication.serializers import *
 
 
 
-
 class TodoViewSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", required = False, read_only = True)
     updated_at = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", required = False, read_only = True)
