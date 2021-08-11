@@ -35,10 +35,16 @@ class CollabListViewSet(viewsets.ModelViewSet):
     
 class TodoViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = TodoSerializer
+    serializer_class = TodoViewSerializer
 
     def get_queryset(self):
         return Todo.objects.all()
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # def get_object(self):
     #     if getattr(self, 'swagger_fake_view', False):
@@ -53,15 +59,6 @@ class TodoViewSet(viewsets.ModelViewSet):
     #     return uTodo | oTodo
 
 
-# class TodoCreateView(generics.CreateAPIView):
-#     permission_classes = (permissions.IsAuthenticated, )
-#     serializer_class = TodoCreateSerializer
-
-#     def post(self, request):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # class CollabAddView(generics.GenericAPIView):
