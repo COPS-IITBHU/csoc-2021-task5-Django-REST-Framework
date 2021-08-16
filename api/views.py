@@ -11,9 +11,6 @@ from rest_framework.response import Response
 from .models import *
 from django.http import Http404
 from rest_framework.decorators import action   
-from django.contrib.auth import get_user_model
-
-UserModel = get_user_model()  
 
 # class TodoListView(generics.ListAPIView):
 #     permission_classes = (permissions.IsAuthenticated,)
@@ -32,10 +29,10 @@ class CollabListViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return collab.objects.all()
-    
+
 class TodoViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = TodoSerializer
+    serializer_class = TodoViewSerializer
 
     def get_queryset(self):
         return Todo.objects.all()
