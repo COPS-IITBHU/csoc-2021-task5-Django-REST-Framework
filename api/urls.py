@@ -9,5 +9,5 @@ router.register(r'todo', TodoViewSet, basename='todo')
 
 urlpatterns = [
     path(r'', include(router.urls)),
-    path('todo', TodoCreateView.as_view()),
+    path('todo/create', TodoCreateView.as_view()),
 ]
