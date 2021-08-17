@@ -9,8 +9,7 @@ from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
-from django.http import Http404
-from rest_framework.decorators import action   
+from django.http import Http404  
 
 # class TodoListView(generics.ListAPIView):
 #     permission_classes = (permissions.IsAuthenticated,)
@@ -22,6 +21,15 @@ from rest_framework.decorators import action
 #         cTodo = collab.objects.filter(user = user).values('todo')
 #         oTodo = Todo.objects.filter(pk__in = cTodo)
 #         return uTodo | oTodo
+class TodoCreateView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = TodoCreateSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.save()
+        return Response(data, status=status.HTTP_201_CREATED)
 
 class CollabListViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
@@ -33,9 +41,11 @@ class CollabListViewSet(viewsets.ModelViewSet):
 class TodoViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TodoViewSerializer
+    http_method_names = ['get', 'put', 'patch', 'head', 'options', 'trace', 'delete']
 
     def get_queryset(self):
         return Todo.objects.all()
+
 
     # def get_object(self):
     #     if getattr(self, 'swagger_fake_view', False):
@@ -50,15 +60,6 @@ class TodoViewSet(viewsets.ModelViewSet):
     #     return uTodo | oTodo
 
 
-# class TodoCreateView(generics.CreateAPIView):
-#     permission_classes = (permissions.IsAuthenticated, )
-#     serializer_class = TodoCreateSerializer
-
-#     def post(self, request):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # class CollabAddView(generics.GenericAPIView):
@@ -99,3 +100,4 @@ class TodoViewSet(viewsets.ModelViewSet):
 
 #         else: 
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

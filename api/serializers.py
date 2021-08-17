@@ -5,6 +5,18 @@ from django.contrib.auth.models import User
 # User = get_user_model()
 from authentication.serializers import *
 
+class TodoCreateSerializer(serializers.ModelSerializer):
+    def save(self, **kwargs):
+        data = self.validated_data
+        user = self.context['request'].user
+        title = data['title']
+        todo = Todo.objects.create(creator=user, title=title)
+        todo.save()
+
+    class Meta:
+        model = Todo
+        fields = ('id', 'title',)
+    
 class TodoCreatorSerializer(serializers.ModelSerializer):
     creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
     creator_id = serializers.IntegerField(source = 'creator.id', required = False, read_only = True)
@@ -16,6 +28,7 @@ class TodoCreatorSerializer(serializers.ModelSerializer):
 class TodoViewSerializer(serializers.ModelSerializer):
     creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
     creator_id = serializers.IntegerField(source = 'creator.id', required = False, read_only = True)
+
     class Meta:
         model = Todo
         fields = ('id', 'title', 'creator','creator_id')
