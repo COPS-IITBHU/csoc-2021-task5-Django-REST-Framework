@@ -47,7 +47,7 @@ class CollabViewSerializer(serializers.ModelSerializer):
     todo = TodoViewSerializer(many=True, read_only=True)
     class Meta:
         model = collab
-        fields = ('id','username','todo','todo')
+        fields = ('id','username','todo',)
 
 
 # class CollabSerializer(serializers.ModelSerializer):
