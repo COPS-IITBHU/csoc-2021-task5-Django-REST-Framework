@@ -33,18 +33,18 @@ class TodoViewSerializer(serializers.ModelSerializer):
         model = Todo
         fields = ('id', 'title', 'creator','creator_id')
 
-
-class TodoSerializer(serializers.ModelSerializer):
-    creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
-    creator_id = serializers.IntegerField(source = 'creator.id', required = False, read_only = True)
+class CollabUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source = 'user.username', required = False, read_only = True)
+    def put(self, instance, validated_data):
+       return super().update(instance, validated_data)
     class Meta:
-        model = Todo
-        fields = ('title','id', 'creator', 'creator_id')
+        model = collab
+        fields = ('todo', 'username')
 
 
 class CollabViewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', required=False, read_only=True)
-    todo = TodoSerializer(many=True, read_only=True)
+    todo = TodoViewSerializer(many=True, read_only=True)
     class Meta:
         model = collab
         fields = ('id','username','todo','todo')

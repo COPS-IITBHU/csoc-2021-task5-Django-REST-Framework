@@ -34,9 +34,18 @@ class TodoCreateView(generics.GenericAPIView):
 class CollabListViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = CollabViewSerializer
+    http_method_names = ['get','head', 'options', 'trace', 'delete']
 
     def get_queryset(self):
         return collab.objects.all()
+class CollabUpdateViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CollabUpdateSerializer
+    http_method_names = ['put', 'patch']
+    
+    def get_queryset(self):
+        return collab.objects.all()
+
 
 class TodoViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
@@ -45,6 +54,11 @@ class TodoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Todo.objects.all()
+
+class CollabUpdateView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CollabUpdateSerializer
+    
 
 
     # def get_object(self):
