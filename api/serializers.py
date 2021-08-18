@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
-# from django.contrib.auth import get_user_model
-# User = get_user_model()
 from authentication.serializers import *
 
 class TodoCreateSerializer(serializers.ModelSerializer):
@@ -39,25 +37,13 @@ class CollabUpdateSerializer(serializers.ModelSerializer):
        return super().update(instance, validated_data)
     class Meta:
         model = collab
-        fields = ('todo', 'username')
+        fields = ('todos', 'username')
 
 
 class CollabViewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', required=False, read_only=True)
-    todo = TodoViewSerializer(many=True, read_only=True)
+    todos = TodoViewSerializer(many=True, read_only=True)
     class Meta:
         model = collab
-        fields = ('id','username','todo','todo')
+        fields = ('id','username','todos',)
 
-
-# class CollabSerializer(serializers.ModelSerializer):
-#     username = serializers.CharField(source='user.username')
-#     def validate_username(self, value):
-#         if value != self.context['request'].user.username:
-#             raise serializers.ValidationError("You can't create a collab with someone else's todo")
-#         return {'id', 'username', 'todo'}
-    
-#     class Meta:
-#         model = collab
-#         fields = ('id','username','todo',)
-#         print(id)
