@@ -11,5 +11,4 @@ router.register(r'collaborations/update', CollabUpdateViewSet, basename='collab'
 urlpatterns = [
     path(r'', include(router.urls)),
     path('todo/create', TodoCreateView.as_view()),
-    path('collaborations/<int:pk>/update', CollabUpdateView.as_view()),
 ]
