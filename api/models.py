@@ -13,7 +13,7 @@ class Todo(models.Model):
  
 class collab(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    todo = models.ManyToManyField(Todo, null = True)
+    todos = models.ManyToManyField(Todo, null = True)
 
     
     def __str__(self):
