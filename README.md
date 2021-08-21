@@ -1,6 +1,5 @@
 
-# Todo App API - CSoC Dev Task 5
-
+# Todo App API-
 ## Introduction
 
 Todo API server made with Django Rest framework and heroku postgresql.
