@@ -21,21 +21,21 @@ class TodoCreateView(generics.GenericAPIView):
         data = serializer.save()
         return Response(data, status=status.HTTP_201_CREATED)
 
-class CollabListViewSet(viewsets.ModelViewSet):
+class CollaborationListViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = CollabViewSerializer
+    serializer_class = CollaborationViewSerializer
     http_method_names = ['get', 'delete']
 
     def get_queryset(self):
-        return collab.objects.all()
+        return Collaboration.objects.all()
 
-class CollabUpdateViewSet(viewsets.ModelViewSet):
+class CollaborationUpdateViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = CollabUpdateSerializer
+    serializer_class = CollaborationUpdateSerializer
     http_method_names = ['put', 'patch']
     
     def get_queryset(self):
-        return collab.objects.all()
+        return Collaboration.objects.all()
 
 
 class TodoViewSet(viewsets.ModelViewSet):
@@ -46,10 +46,10 @@ class TodoViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Todo.objects.all()
 
-class CollabUpdateView(generics.GenericAPIView):
+class CollaborationUpdateView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = CollabUpdateSerializer
+    serializer_class = CollaborationUpdateSerializer
     
     def get_queryset(self):
-        return collab.objects.all()
+        return Collaboration.objects.all()
 
