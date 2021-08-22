@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from authentication.serializers import *
 
 class TodoCreateSerializer(serializers.ModelSerializer):
+#saving the user who created the todo
     def save(self, **kwargs):
         data = self.validated_data
         user = self.context['request'].user

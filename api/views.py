@@ -11,6 +11,15 @@ from rest_framework.response import Response
 from .models import *
 from django.http import Http404  
 
+
+class TodoViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TodoViewSerializer
+    http_method_names = ['get', 'put', 'patch', 'delete']
+
+    def get_queryset(self):
+        return Todo.objects.all()
+
 class TodoCreateView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoCreateSerializer
@@ -36,20 +45,3 @@ class CollaborationUpdateViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return Collaboration.objects.all()
-
-
-class TodoViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = TodoViewSerializer
-    http_method_names = ['get', 'put', 'patch', 'delete']
-
-    def get_queryset(self):
-        return Todo.objects.all()
-
-class CollaborationUpdateView(generics.GenericAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = CollaborationUpdateSerializer
-    
-    def get_queryset(self):
-        return Collaboration.objects.all()
-
