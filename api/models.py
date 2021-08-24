@@ -17,4 +17,3 @@ class Collaboration(models.Model):
     
     def __str__(self):
         return self.todo.title
-

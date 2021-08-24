@@ -15,22 +15,13 @@ class TodoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title',)
-    
-class TodoCreatorSerializer(serializers.ModelSerializer):
-    creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
-    creator_id = serializers.IntegerField(source = 'creator.id', required = False, read_only = True)
-    class Meta:
-        model = Todo
-        fields = ('creator','creator_id')
-
 
 class TodoViewSerializer(serializers.ModelSerializer):
     creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
     creator_id = serializers.IntegerField(source = 'creator.id', required = False, read_only = True)
-
     class Meta:
         model = Todo
-        fields = ('id', 'title', 'creator','creator_id')
+        fields = ('id', 'title','creator', 'creator_id')
 
 class CollaborationUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,7 +29,7 @@ class CollaborationUpdateSerializer(serializers.ModelSerializer):
         fields = ('todo', 'collaborators')
 
 
-class CollaborationViewSerializer(serializers.ModelSerializer):
+class CollaborationSerializer(serializers.ModelSerializer):
     todo = serializers.CharField(source = 'todo.title', required = False, read_only = True)
     todo_id = serializers.IntegerField(source = 'todo.id', required = False, read_only = True)
     collaboration_id = serializers.IntegerField(source = 'id', required = False, read_only = True)
