@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_yasg',
     'corsheaders',
-    'api'
+    'api',
+    'authentication'
 ]
 
 MIDDLEWARE = [
@@ -98,6 +99,9 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+import dj_database_url 
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -123,6 +127,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S' 
+
 
 TIME_ZONE = 'Asia/Kolkata'
 

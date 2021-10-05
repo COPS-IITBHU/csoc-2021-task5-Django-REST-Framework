@@ -1,29 +1,39 @@
 from rest_framework import serializers
-from .models import Todo
-
-
-"""
-TODO:
-Create the appropriate Serializer class(es) for implementing
-Todo GET (List and Detail), PUT, PATCH and DELETE.
-"""
-
+from .models import *
+from django.contrib.auth.models import User
+from authentication.serializers import *
 
 class TodoCreateSerializer(serializers.ModelSerializer):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
-
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
+#saving the user who created the todo
     def save(self, **kwargs):
         data = self.validated_data
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
-    
+        todo.save()
+
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+class TodoViewSerializer(serializers.ModelSerializer):
+    creator = serializers.CharField(source = 'creator.username', required = False, read_only = True)
+    creator_id = serializers.IntegerField(source = 'creator.id', required = False, read_only = True)
+    class Meta:
+        model = Todo
+        fields = ('id', 'title','creator', 'creator_id')
+
+class CollaborationUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Collaboration
+        fields = ('todo', 'collaborators')
+
+
+class CollaborationSerializer(serializers.ModelSerializer):
+    todo = serializers.CharField(source = 'todo.title', required = False, read_only = True)
+    todo_id = serializers.IntegerField(source = 'todo.id', required = False, read_only = True)
+    collaboration_id = serializers.IntegerField(source = 'id', required = False, read_only = True)
+    class Meta:
+        model = Collaboration
+        fields = ('collaboration_id','todo','todo_id','collaborators',)
+

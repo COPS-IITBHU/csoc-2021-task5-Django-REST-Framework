@@ -1,35 +1,59 @@
-from rest_framework import generics
+from django.db.models import query
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, viewsets
+from rest_framework.generics import *
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.decorators import api_view
+from .serializers import *
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import TodoCreateSerializer
-from .models import Todo
+from .models import *
+from django.http import Http404  
 
 
-"""
-TODO:
-Create the appropriate View classes for implementing
-Todo GET (List and Detail), PUT, PATCH and DELETE.
-"""
+class TodoViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TodoViewSerializer
+    # http_method_names = ['get', 'put', 'patch', 'delete']
+    
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Todo.objects.all()
 
 
-class TodoCreateView(generics.GenericAPIView):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
+class CollaborationListViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CollaborationSerializer
 
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
-    permission_classes = (permissions.IsAuthenticated, )
-    serializer_class = TodoCreateSerializer
+    def get_queryset(self):
+        return Collaboration.objects.all()
 
-    def post(self, request):
-        """
-        Creates a Todo entry for the logged in user.
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(status=status.HTTP_200_OK)
+# class TodoCreateView(generics.GenericAPIView):
+#     permission_classes = (permissions.IsAuthenticated, )
+#     serializer_class = TodoCreateSerializer
+
+#     def post(self, request):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         data = serializer.save()
+#         return Response(data, status=status.HTTP_201_CREATED)
+
+# class CollaborationUpdateViewSet(viewsets.ModelViewSet):
+#     permission_classes = (permissions.IsAuthenticated,)
+#     serializer_class = CollaborationUpdateSerializer
+#     http_method_names = ['put', 'patch']
+    
+#     def get_queryset(self):
+#         return Collaboration.objects.all()
+
+
+#super method in python
+#one viewset all functionalities
+#writing tests
+
+
+#django queryset api
+#mysql and postgresql
